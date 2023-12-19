@@ -1,5 +1,6 @@
 package com.gestion_biblio.gestion_biblio.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -16,7 +17,8 @@ public class Categories {
     @Column(name = "Nom")
     private String nom;
 
-    @OneToMany(mappedBy = "categories", cascade = CascadeType.ALL)
+    @JsonBackReference
+    @OneToMany(mappedBy = "categories")
     private List<Livre> livres;
 
 

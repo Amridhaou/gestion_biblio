@@ -1,5 +1,6 @@
 package com.gestion_biblio.gestion_biblio.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jdk.jfr.Category;
 
@@ -26,27 +27,25 @@ public class Livre {
 
     @Column(name = "isbn")
     private String isbn;
+    @JsonBackReference
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Categories categories;
 
-    @ManyToOne
-    @JoinColumn(name = "catalog_id")
-    private CatalogueEnLine catalogueEnLine;
 
-    @OneToMany(mappedBy = "livre", cascade = CascadeType.ALL)
+    @JsonBackReference
+    @OneToMany(mappedBy = "livre")
     private List<Reservations> reservations;
 
 
-    public Livre(Integer id, String titre, String auteur, Date datePublication, String isbn, Categories categories, CatalogueEnLine catalogueEnLine, List<Reservations> reservations) {
+    public Livre(Integer id, String titre, String auteur, Date datePublication, String isbn, Categories categories, List<Reservations> reservations) {
         this.id = id;
         this.titre = titre;
         this.auteur = auteur;
         this.datePublication = datePublication;
         this.isbn = isbn;
         this.categories = categories;
-        this.catalogueEnLine = catalogueEnLine;
         this.reservations = reservations;
     }
 
@@ -99,14 +98,6 @@ public class Livre {
 
     public void setCategories(Categories categories) {
         this.categories = categories;
-    }
-
-    public CatalogueEnLine getCatalogueEnLine() {
-        return catalogueEnLine;
-    }
-
-    public void setCatalogueEnLine(CatalogueEnLine catalogueEnLine) {
-        this.catalogueEnLine = catalogueEnLine;
     }
 
     public List<Reservations> getReservations() {

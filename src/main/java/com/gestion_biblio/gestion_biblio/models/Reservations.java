@@ -1,5 +1,6 @@
 package com.gestion_biblio.gestion_biblio.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -11,20 +12,23 @@ public class Reservations {
     @Column(name = "id")
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "utilisateur_id")
-    private Utilisateur utilisateur;
-
-    @ManyToOne
-    @JoinColumn(name = "livre_id")
-    private Livre livre;
-
     @Column(name = "DateReservation")
     private Date dateReservation;
 
-    public Reservations(Integer id, Utilisateur utilisateur, Livre livre, Date dateReservation) {
+    @JsonBackReference
+
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
+    private User user;
+    @JsonBackReference
+
+    @ManyToOne()
+    @JoinColumn(name = "livre_id")
+    private Livre livre;
+
+    public Reservations(Integer id, User user, Livre livre, Date dateReservation) {
         this.id = id;
-        this.utilisateur = utilisateur;
+        this.user = user;
         this.livre = livre;
         this.dateReservation = dateReservation;
     }
@@ -40,12 +44,12 @@ public class Reservations {
         this.id = id;
     }
 
-    public Utilisateur getUtilisateur() {
-        return utilisateur;
+    public User getUser() {
+        return user;
     }
 
-    public void setUtilisateur(Utilisateur utilisateur) {
-        this.utilisateur = utilisateur;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Livre getLivre() {

@@ -1,30 +1,62 @@
 package com.gestion_biblio.gestion_biblio.services;
+
+import com.gestion_biblio.gestion_biblio.dtos.CategorieDto;
 import com.gestion_biblio.gestion_biblio.models.Categories;
 import com.gestion_biblio.gestion_biblio.repositories.CategoriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoriesService {
+
+    private final CategoriesRepository categoriesRepository;
+
     @Autowired
-    private CategoriesRepository categoriesRepository ;
-    public List<Categories> Afficher_Le_Categories()
-    {
-        return categoriesRepository.findAll();
+    public CategoriesService(CategoriesRepository categoriesRepository) {
+        this.categoriesRepository = categoriesRepository;
     }
 
-    public Categories Ajout_Categories(Categories categories)
-    {
-        return categoriesRepository.save(categories);
+    public List<Categories> getAllCategories() {
+        List<Categories> categoriesList = categoriesRepository.findAll();
+        return categoriesList;
     }
-    public Categories Recherche_Categories(Integer categories_id )
-    {
-        return categoriesRepository.findById(categories_id).orElse(null) ;
+
+    public CategorieDto getCategoryById(Integer categoryId) {
+        Categories category = categoriesRepository.findById(categoryId).orElse(null);
+        return (category != null) ? mapToDto(category) : null;
     }
-    public void Supprimer_Categories(Integer categories_id )
-    {
-        categoriesRepository.deleteById(categories_id);
+
+    public CategorieDto createCategory(CategorieDto categorieDto) {
+        Categories newCategory = new Categories();
+        mapDtoToCategory(categorieDto, newCategory);
+        Categories savedCategory = categoriesRepository.save(newCategory);
+        return mapToDto(savedCategory);
+    }
+
+    public CategorieDto updateCategory(Integer categoryId, CategorieDto updatedCategoryDto) {
+        Categories existingCategory = categoriesRepository.findById(categoryId).orElse(null);
+
+        if (existingCategory != null) {
+            mapDtoToCategory(updatedCategoryDto, existingCategory);
+            Categories updatedCategory = categoriesRepository.save(existingCategory);
+            return mapToDto(updatedCategory);
+        } else {
+            return null;
+        }
+    }
+
+    public void deleteCategory(Integer categoryId) {
+        categoriesRepository.deleteById(categoryId);
+    }
+
+    private CategorieDto mapToDto(Categories category) {
+        return new CategorieDto(category.getNom());
+    }
+
+    private void mapDtoToCategory(CategorieDto categorieDto, Categories category) {
+        category.setNom(categorieDto.getNom());
     }
 }

@@ -1,79 +1,67 @@
 package com.gestion_biblio.gestion_biblio.controllers;
 
+import com.gestion_biblio.gestion_biblio.dtos.CategorieDto;
 import com.gestion_biblio.gestion_biblio.models.Categories;
 import com.gestion_biblio.gestion_biblio.services.CategoriesService;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.print.attribute.standard.PresentationDirection;
 import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="api/v1/Categories")
+@RequestMapping(path = "api/v1/Categories")
 public class CategoriesController {
+
+    private final CategoriesService categoriesService;
+
     @Autowired
-    private CategoriesService categoriesService ;
+    public CategoriesController(CategoriesService categoriesService) {
+        this.categoriesService = categoriesService;
+    }
+
     @GetMapping
-    public List<Categories> Afficher_Le_Categories()
-    {
-        return categoriesService.Afficher_Le_Categories();
+    public ResponseEntity<List<Categories>> getAllCategories() {
+        List<Categories> categories = categoriesService.getAllCategories();
+        return ResponseEntity.ok(categories);
     }
-    @PostMapping()
 
-    public ResponseEntity<?>  Ajout_Categories(@RequestBody Categories categories)
-    {
-        categories.setLivres(null);
-        Categories categoriesAjouter = categoriesService.Ajout_Categories(categories);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(categoriesAjouter.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(categoriesAjouter);
-
-
-    }
     @GetMapping("/{id}")
-    public  ResponseEntity<?> Recherche_Categories(Integer id )
-    {
-        Categories categories = categoriesService.Recherche_Categories(id);
-        return categories != null ? ResponseEntity.ok(categories) : ResponseEntity.status(HttpStatus.NOT_FOUND).body("categories n'existe pas");
-
+    public ResponseEntity<CategorieDto> getCategoryById(@PathVariable Integer id) {
+        CategorieDto category = categoriesService.getCategoryById(id);
+        return (category != null) ? ResponseEntity.ok(category) : ResponseEntity.notFound().build();
     }
+
+    @PostMapping
+    public ResponseEntity<?> createCategory(@RequestBody CategorieDto categorieDto) {
+        CategorieDto createdCategory = categoriesService.createCategory(categorieDto);
+
+        if (createdCategory != null) {
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(createdCategory.getNom())
+                    .toUri();
+            return ResponseEntity.created(location).body(createdCategory);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create category");
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCategory(@PathVariable Integer id, @RequestBody CategorieDto updatedCategoryDto) {
+        CategorieDto updatedCategory = categoriesService.updateCategory(id, updatedCategoryDto);
+
+        return (updatedCategory != null) ?
+                ResponseEntity.ok(updatedCategory) :
+                ResponseEntity.notFound().build();
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> Supprimer_Categories(Integer id )
-    {
-        if (categoriesService.Recherche_Categories(id) != null) {
-            categoriesService.Supprimer_Categories(id);
-            return ResponseEntity.ok("les categories est supprimer");
-        }
-        else { return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("categories n'existe pas");}
-        }
-
-
-    @PutMapping()
-
-    public ResponseEntity<?>  Modifier_Categories(@RequestBody Categories categories , Integer id)
-    {
-
-        Categories categoriesRecherche = categoriesService.Recherche_Categories(id);
-
-            if (categoriesRecherche != null) {
-                categoriesRecherche.setNom(categories.getNom());
-                Categories categoriesModifier = categoriesService.Ajout_Categories(categoriesRecherche);
-                return ResponseEntity.ok(categoriesModifier);
-            }
-            else { return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("categories n'existe pas");}
-
-
-
-
+    public ResponseEntity<?> deleteCategory(@PathVariable Integer id) {
+        categoriesService.deleteCategory(id);
+        return ResponseEntity.ok("Category deleted successfully");
     }
-
-
 }

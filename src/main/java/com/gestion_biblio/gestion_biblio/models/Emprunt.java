@@ -1,5 +1,6 @@
 package com.gestion_biblio.gestion_biblio.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -12,10 +13,12 @@ public class Emprunt {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+    @JsonBackReference
 
     @ManyToOne
-    @JoinColumn(name = "utilisateur_id")
-    private Utilisateur utilisateur;
+    @JoinColumn(name = "user_id")
+    private User user;
+    @JsonBackReference
 
     @ManyToOne
     @JoinColumn(name = "livre_id")
@@ -27,9 +30,9 @@ public class Emprunt {
     @Column(name = "DateFin")
     private Date dateFin;
 
-    public Emprunt(Integer id, Utilisateur utilisateur, Livre livre, Date dateDebut, Date dateFin) {
+    public Emprunt(Integer id, User user, Livre livre, Date dateDebut, Date dateFin) {
         this.id = id;
-        this.utilisateur = utilisateur;
+        this.user = user;
         this.livre = livre;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
@@ -50,12 +53,12 @@ public class Emprunt {
         this.id = id;
     }
 
-    public Utilisateur getUtilisateur() {
-        return utilisateur;
+    public User getUser() {
+        return user;
     }
 
-    public void setUtilisateur(Utilisateur utilisateur) {
-        this.utilisateur = utilisateur;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Livre getLivre() {

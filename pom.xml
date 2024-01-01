@@ -99,6 +99,19 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
+        <!-- Dépendance pour l'envoi d'e-mails -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- Dépendance pour la planification des tâches avec Quartz -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+
+
 
 
 
